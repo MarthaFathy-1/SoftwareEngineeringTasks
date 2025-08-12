@@ -1,0 +1,25 @@
+﻿using CRUDOperationsForBook.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+
+namespace CRUDOperationsForBook.Data
+{
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext()
+        {
+
+        }
+        public AppDbContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Data Source=DESKTOP-5SCAOFD\\SQL22; Initial Catalog=CRUDOperationsForBook; Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+            base.OnConfiguring(optionsBuilder);
+        }
+
+        public DbSet<Book> Books { get; set; }
+    }
+}
