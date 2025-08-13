@@ -57,7 +57,7 @@ namespace CRUDOperationsForBook.Controllers
                 {
                     return NotFound();
                 }
-                book.Author = newBook.Author;
+                book.AuthorName = newBook.AuthorName;
                 book.CoverImageUrl = newBook.CoverImageUrl;
                 book.Description = newBook.Description;
                 book.Genre = newBook.Genre;

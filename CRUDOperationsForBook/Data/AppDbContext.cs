@@ -1,6 +1,7 @@
 ﻿using CRUDOperationsForBook.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 
 namespace CRUDOperationsForBook.Data
 {
@@ -21,5 +22,6 @@ namespace CRUDOperationsForBook.Data
         }
 
         public DbSet<Book> Books { get; set; }
+        public DbSet<Author> Authors { get; set; }
     }
 }

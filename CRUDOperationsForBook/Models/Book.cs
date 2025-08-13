@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRUDOperationsForBook.Models
 {
@@ -15,8 +16,7 @@ namespace CRUDOperationsForBook.Models
 
         [Required]
         [StringLength(50, ErrorMessage = "Author name cannot be longer than 50 characters.")]
-        [Display(Name = "Author Name")]
-        public string Author { get; set; }
+        public string AuthorName { get; set; }
 
         [StringLength(30, ErrorMessage = "Genre cannot be longer than 30 characters.")]
         public string Genre { get; set; }
@@ -48,5 +48,9 @@ namespace CRUDOperationsForBook.Models
 
         [Url(ErrorMessage = "Please enter a valid URL.")]
         public string CoverImageUrl { get; set; }
+
+        [ForeignKey("Author")]
+        public int AuthorId { get; set; }
+        public Author? Author { get; set; }
     }
 }

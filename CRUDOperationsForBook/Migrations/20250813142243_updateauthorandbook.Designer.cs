@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRUDOperationsForBook.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250812130341_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250813142243_updateauthorandbook")]
+    partial class updateauthorandbook
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,36 @@ namespace CRUDOperationsForBook.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CRUDOperationsForBook.Models.Author", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Birthdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nationality")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Authors");
+                });
+
             modelBuilder.Entity("CRUDOperationsForBook.Models.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -33,7 +63,10 @@ namespace CRUDOperationsForBook.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Author")
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -83,7 +116,25 @@ namespace CRUDOperationsForBook.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("CRUDOperationsForBook.Models.Book", b =>
+                {
+                    b.HasOne("CRUDOperationsForBook.Models.Author", "Author")
+                        .WithMany("Books")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("CRUDOperationsForBook.Models.Author", b =>
+                {
+                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }
