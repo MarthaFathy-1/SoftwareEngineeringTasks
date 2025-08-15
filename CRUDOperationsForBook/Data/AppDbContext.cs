@@ -1,11 +1,12 @@
 ﻿using CRUDOperationsForBook.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 
 namespace CRUDOperationsForBook.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext()
         {
@@ -23,5 +24,6 @@ namespace CRUDOperationsForBook.Data
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
     }
 }

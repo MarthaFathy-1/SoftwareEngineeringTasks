@@ -1,5 +1,7 @@
 
 using CRUDOperationsForBook.Data;
+using CRUDOperationsForBook.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUDOperationsForBook
@@ -20,6 +22,10 @@ namespace CRUDOperationsForBook
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                            .AddEntityFrameworkStores<AppDbContext>()
+                            .AddDefaultTokenProviders();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,7 +36,7 @@ namespace CRUDOperationsForBook
             }
 
             app.UseAuthorization();
-
+            app.UseAuthentication();
 
             app.MapControllers();
 
