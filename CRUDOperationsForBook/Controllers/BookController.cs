@@ -1,5 +1,6 @@
 ﻿using CRUDOperationsForBook.Data;
 using CRUDOperationsForBook.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ namespace CRUDOperationsForBook.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetAll()
         {
             var books = context.Books.ToList();
@@ -27,6 +29,7 @@ namespace CRUDOperationsForBook.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize]
         public IActionResult GetById(int id)
         {
             var book = context.Books.FirstOrDefault(b => b.Id == id);
@@ -36,6 +39,7 @@ namespace CRUDOperationsForBook.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Editor")]
         public IActionResult AddBook(Book book)
         {
             if (ModelState.IsValid)
@@ -48,6 +52,7 @@ namespace CRUDOperationsForBook.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin,Editor")]
         public IActionResult Edit(int id, Book newBook)
         {
             if(ModelState.IsValid)
@@ -79,6 +84,7 @@ namespace CRUDOperationsForBook.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteBook(int id)
         {
             var book = context.Books.FirstOrDefault(b => b.Id == id);

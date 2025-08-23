@@ -44,6 +44,7 @@ namespace CRUDOperationsForBook.Controllers
             var result = await userManager.CreateAsync(appUser, registerDTO.Password);
             if (result.Succeeded)
             {
+                await userManager.AddToRoleAsync(appUser, "Viewer");
                 return Ok("User registered successfully");
             }
             else
@@ -61,38 +62,46 @@ namespace CRUDOperationsForBook.Controllers
             }
             //check if the user exists
             AppUser userFromDb = await userManager.FindByNameAsync(userFromRequest.UserName);
-            var isPasswordValid = await userManager.CheckPasswordAsync(userFromDb, userFromRequest.Password);
-            if (userFromDb != null && isPasswordValid == true)
-            {
-                List<Claim> claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier,userFromDb.Id),
-                    new Claim(ClaimTypes.Name, userFromDb.UserName),
-                    new Claim(ClaimTypes.Email, userFromDb.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti ,Guid.NewGuid().ToString()),
-                };
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("AFGeih987$#5925d,fkjhkdkdl,xkf&/532"));
-                SigningCredentials signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                //Generate the token
-                JwtSecurityToken myToken = new JwtSecurityToken(
-                    issuer: "http://localhost:46926/",
-                    audience: "http://localhost:4200/",
-                    expires: DateTime.UtcNow.AddHours(2),
-                    claims: claims,
-                    signingCredentials: signingCredentials
-                );
+            if (userFromDb == null) return BadRequest("Invalid username or password");
 
-                //generate the token response
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(myToken),
-                    expiration = myToken.ValidTo
-                });
-            }
-            else
+            var isPasswordValid = await userManager.CheckPasswordAsync(userFromDb, userFromRequest.Password);
+            if (!isPasswordValid) return BadRequest("Invalid username or password");
+
+            var userRoles = await userManager.GetRolesAsync(userFromDb);
+
+            List<Claim> claims = new List<Claim>
             {
-                return BadRequest("Invalid email or password");
+                new Claim(ClaimTypes.NameIdentifier, userFromDb.Id),
+                new Claim(ClaimTypes.Name, userFromDb.UserName),
+                new Claim(ClaimTypes.Email, userFromDb.Email),
+                new Claim(JwtRegisteredClaimNames.Jti ,Guid.NewGuid().ToString()),
+            };
+
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Asdj2333DCTTyydd45sdjhdsfdsjhsdfGFSSSS554wwew"));
+            SigningCredentials signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            //Generate the token
+            JwtSecurityToken myToken = new JwtSecurityToken(
+                issuer: "http://localhost:46926/",
+                audience: "http://localhost:4200/",
+                expires: DateTime.UtcNow.AddHours(2),
+                claims: claims,
+                signingCredentials: signingCredentials
+            );
+
+            //generate the token response
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(myToken),
+                expiration = myToken.ValidTo,
+                roles = userRoles
+            });
+
         }
 
     }
